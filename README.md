@@ -4,7 +4,7 @@
 
 <details> 
   <summary>if you want to see an example, click here </summary>
-   <h> input search request он же не наполеон
+   <pre> input search request он же не наполеон
 you typed:  он же не наполеон 
 *because python console doesn't sopport formating key words would be encapsulated in '!!!'*
 method 1:
@@ -222,5 +222,5 @@ method 2:
 52: tom: 3 chapter: 1 part: 5
 Даву был Аракчеев императора Наполеона – Аракчеев !!!не!!! трус, но столь !!!же!!! исправный, жестокий и !!!не!!! умеющий выражать свою преданность ...
 53: tom: 3 chapter: 3 part: 20
-обезматочившем улье уже нет жизни, но на поверхностный взгляд !!!он!!! кажется таким !!!же!!! живым, как и другие.Так !!!же!!! весело в ... </h> 
+обезматочившем улье уже нет жизни, но на поверхностный взгляд !!!он!!! кажется таким !!!же!!! живым, как и другие.Так !!!же!!! весело в ... </pre> 
 </details>
