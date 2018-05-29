@@ -230,7 +230,7 @@ for i in range(len(pos)):
 pos.sort(key=sfunc2)
 pos.reverse()
 if pos != list():
-    print('\n\nmethod 2:')
+    print('-\n-\nmethod 2:')
 for i in range(len(pos)):
     print("{}: tom: {} chapter: {} part: {}".format(i + 1, pos[i]['tom'], pos[i]['chapter'], pos[i]['part']))
     if i == 4:
