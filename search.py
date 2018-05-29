@@ -4,6 +4,8 @@ import re
 from tqdm import tqdm
 
 
+# АДАМ
+
 def snipset():
     pass
     return
