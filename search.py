@@ -4,9 +4,15 @@ import re
 from tqdm import tqdm
 
 
+def snipset():
+    pass
+    return
+
+
 def process(filename):
-    tmpl = list()
+    tmp_l = list()
     s = str()
+    tmp = 0
     file = open(filename, 'r', encoding='UTF-8')
     line = file.readline()
     o = line.find('/') + 1
@@ -20,7 +26,7 @@ def process(filename):
         if line[0] == '/':
             if tmp == 1:
                 s = s.replace('\n', '')
-                tmpl.append(dict(tom=t, chapter=c, part=p, text=s))
+                tmp_l.append(dict(tom=t, chapter=c, part=p, text=s))
                 s = ''
             tmp = 0
             o = line.find('/') + 1
@@ -29,34 +35,21 @@ def process(filename):
             c = int(line[o:line.find('/', o)])
             o = line.find('/', o) + 1
             p = int(line[o:line.find('/', o)])
-            # print('t = {}, c = {}, g = {}'.format(t, c, p))
-            # print(line)
         else:
             s = s.replace(r'\n', '')
             s = s + line
             tmp = 1
     s = s.replace('\n', '')
-    tmpl.append(dict(tom=t, chapter=c, part=p, text=s))
-    s = ''
+    tmp_l.append(dict(tom=t, chapter=c, part=p, text=s))
+    s = str()
     backward_list = list()
-    for i in tqdm(range(len(tmpl))):
-        tmpl[i]['data'] = list()
+    for i in tqdm(range(len(tmp_l))):
+        tmp_l[i] = dict(data=list())
         add = list()
-        tmpl[i]['data']['amount_of_words'] = len(tmpl[i]['text'])
-        words = tmpl[i]['text'].split()
+        tmp_l[i]['data'] = dict(amount_of_words=len(tmp_l[i]['text']))
+        words = tmp_l[i]['text'].split()
         for j in range(len(words)):
-            words[j] = words[j].replace('.', '')
-            words[j] = words[j].replace(',', '')
-            words[j] = words[j].replace(':', '')
-            words[j] = words[j].replace(';', '')
-            words[j] = words[j].replace('«', '')
-            words[j] = words[j].replace('»', '')
-            words[j] = words[j].replace('–', '')
-            words[j] = words[j].replace('_', '')
-            words[j] = words[j].replace('(', '')
-            words[j] = words[j].replace(')', '')
-            words[j] = words[j].replace('[', '')
-            words[j] = words[j].replace(']', '')
+            words[j] = re.sub(".,:;«»–_\(\)\[]", '', words[j])
             words[j] = words[j].lower()
             add.append(dict(word=words[j], TF=1))
             leng = len(add) - 1
@@ -66,32 +59,31 @@ def process(filename):
                     add[k]['TF'] = add[k]['TF'] + 1
             backward_list.append(dict(word=words[j], data=list(), ind_doc=1))
             backward_list[-1]['data'].append(
-                dict(tom=tmpl[i]['tom'], chapter=tmpl[i]['chapter'], part=tmpl[i]['part'], place=j))
+                dict(tom=tmp_l[i]['tom'], chapter=tmp_l[i]['chapter'], part=tmp_l[i]['part'], place=j))
             leng = len(backward_list) - 1
             for k in range(leng):
                 if backward_list[k]['word'] == words[j]:
                     backward_list.pop()
                     backward_list[k]['data'].append(
-                        dict(tom=tmpl[i]['tom'], chapter=tmpl[i]['chapter'], part=tmpl[i]['part'], place=j))
+                        dict(tom=tmp_l[i]['tom'], chapter=tmp_l[i]['chapter'], part=tmp_l[i]['part'], place=j))
                     btmp = 0
                     for bel in backward_list[k]['data']:
-                        if (bel['tom'] != tmpl[i]['tom']) or (bel['chapter'] != tmpl[i]['chapter']) or (
-                                bel['part'] != tmpl[i]['part']):
+                        if (bel['tom'] != tmp_l[i]['tom']) or (bel['chapter'] != tmp_l[i]['chapter']) or (
+                                bel['part'] != tmp_l[i]['part']):
                             btmp = btmp + 1
                     if btmp == len(backward_list[k]['data']) - 1:
                         backward_list[k]['ind_doc'] = backward_list[k]['ind_doc'] + 1
         for k in range(len(add)):
             add[k]['TF'] = float(add[k]['TF'] / len(add))
-        tmpl[i]['data']['forward_list'] = add
+        tmp_l[i]['data'] = dict(forward_list=add)
 
-        print(
-            '\rtom={}, chapter={}, part={}, data={}\r'.format(tmpl[i]['tom'], tmpl[i]['chapter'], tmpl[i]['part'],
-                                                              tmpl[i]['data']))
+        print('\rtom={}, chapter={}, part={}, data={}\r'.format(tmp_l[i]['tom'], tmp_l[i]['chapter'], tmp_l[i]['part'],
+                                                                tmp_l[i]['data']))
     for el in backward_list:
-        el['IDF'] = float(math.log(len(tmpl) / el['ind_doc']))
+        el['IDF'] = float(math.log(len(tmp_l) / el['ind_doc']))
         print('\rword = {}, data={}, ind_doc={}, IDF={}\r'.format(el['word'], el['data'], el['ind_doc'], el['IDF']))
     with open('processed_text.json', 'w', encoding='UTF-8') as outfile:
-        json.dump(tmpl, outfile, ensure_ascii=False)
+        json.dump(tmp_l, outfile, ensure_ascii=False)
     with open('backward_list.json', 'w', encoding='UTF-8') as outfile:
         json.dump(backward_list, outfile, ensure_ascii=False)
     print('processing finished!')
@@ -103,10 +95,10 @@ def sfunc1(elem):
 
 
 def sfunc2(elem):
-    tmp = 0
-    for i in range(len(elem['dist'])):
-        tmp = tmp + elem['dist'][i]
-    return tmp
+    sf2_tmp = 0
+    for sf2_i in range(len(elem['dist'])):
+        sf2_tmp = sf2_tmp + elem['dist'][sf2_i]
+    return sf2_tmp
 
 
 # process('resources\\sampletext.txt')
