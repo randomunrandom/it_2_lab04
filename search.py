@@ -12,7 +12,7 @@ def snipset():
 def process(filename):
     tmp_l = list()
     s = str()
-    tmp = 0
+    p_tmp = 0
     file = open(filename, 'r', encoding='UTF-8')
     line = file.readline()
     o = line.find('/') + 1
@@ -24,11 +24,11 @@ def process(filename):
     for line in file:
         line = line.replace(r'\n', '')
         if line[0] == '/':
-            if tmp == 1:
+            if p_tmp == 1:
                 s = s.replace('\n', '')
                 tmp_l.append(dict(tom=t, chapter=c, part=p, text=s))
                 s = ''
-            tmp = 0
+            p_tmp = 0
             o = line.find('/') + 1
             t = int(line[o:line.find('/', o)])
             o = line.find('/', o) + 1
@@ -38,47 +38,47 @@ def process(filename):
         else:
             s = s.replace(r'\n', '')
             s = s + line
-            tmp = 1
+            p_tmp = 1
     s = s.replace('\n', '')
     tmp_l.append(dict(tom=t, chapter=c, part=p, text=s))
-    s = str()
     backward_list = list()
-    for i in tqdm(range(len(tmp_l))):
-        tmp_l[i] = dict(data=list())
+    for p_i in tqdm(range(len(tmp_l))):
+        tmp_l[p_i] = dict(data=list())
         add = list()
-        tmp_l[i]['data'] = dict(amount_of_words=len(tmp_l[i]['text']))
-        words = tmp_l[i]['text'].split()
-        for j in range(len(words)):
-            words[j] = re.sub(".,:;«»–_\(\)\[]", '', words[j])
-            words[j] = words[j].lower()
-            add.append(dict(word=words[j], TF=1))
-            leng = len(add) - 1
-            for k in range(leng):
-                if add[k]['word'] == words[j]:
+        tmp_l[p_i] = dict(data=dict(amount_of_words=len(tmp_l[p_i]['text'])))
+        p_words = tmp_l[p_i]['text'].split()
+        for p_j in range(len(p_words)):
+            p_words[p_j] = re.sub(".,:;«»–_\(\)\[]", '', p_words[p_j])
+            p_words[p_j] = p_words[p_j].lower()
+            add.append(dict(word=p_words[p_j], TF=1))
+            p_leng = len(add) - 1
+            for p_k in range(p_leng):
+                if add[p_k]['word'] == p_words[p_j]:
                     add.pop()
-                    add[k]['TF'] = add[k]['TF'] + 1
-            backward_list.append(dict(word=words[j], data=list(), ind_doc=1))
+                    add[p_k]['TF'] = add[p_k]['TF'] + 1
+            backward_list.append(dict(word=p_words[p_j], data=list(), ind_doc=1))
             backward_list[-1]['data'].append(
-                dict(tom=tmp_l[i]['tom'], chapter=tmp_l[i]['chapter'], part=tmp_l[i]['part'], place=j))
-            leng = len(backward_list) - 1
-            for k in range(leng):
-                if backward_list[k]['word'] == words[j]:
+                dict(tom=tmp_l[p_i]['tom'], chapter=tmp_l[p_i]['chapter'], part=tmp_l[p_i]['part'], place=p_j))
+            p_leng = len(backward_list) - 1
+            for p_k in range(p_leng):
+                if backward_list[p_k]['word'] == p_words[p_j]:
                     backward_list.pop()
-                    backward_list[k]['data'].append(
-                        dict(tom=tmp_l[i]['tom'], chapter=tmp_l[i]['chapter'], part=tmp_l[i]['part'], place=j))
+                    backward_list[p_k]['data'].append(
+                        dict(tom=tmp_l[p_i]['tom'], chapter=tmp_l[p_i]['chapter'], part=tmp_l[p_i]['part'], place=p_j))
                     btmp = 0
-                    for bel in backward_list[k]['data']:
-                        if (bel['tom'] != tmp_l[i]['tom']) or (bel['chapter'] != tmp_l[i]['chapter']) or (
-                                bel['part'] != tmp_l[i]['part']):
+                    for bel in backward_list[p_k]['data']:
+                        if (bel['tom'] != tmp_l[p_i]['tom']) or (bel['chapter'] != tmp_l[p_i]['chapter']) or (
+                                bel['part'] != tmp_l[p_i]['part']):
                             btmp = btmp + 1
-                    if btmp == len(backward_list[k]['data']) - 1:
-                        backward_list[k]['ind_doc'] = backward_list[k]['ind_doc'] + 1
-        for k in range(len(add)):
-            add[k]['TF'] = float(add[k]['TF'] / len(add))
-        tmp_l[i]['data'] = dict(forward_list=add)
+                    if btmp == len(backward_list[p_k]['data']) - 1:
+                        backward_list[p_k]['ind_doc'] = backward_list[p_k]['ind_doc'] + 1
+        for p_k in range(len(add)):
+            add[p_k]['TF'] = float(add[p_k]['TF'] / len(add))
+        tmp_l[p_i]['data'] = dict(forward_list=add)
 
-        print('\rtom={}, chapter={}, part={}, data={}\r'.format(tmp_l[i]['tom'], tmp_l[i]['chapter'], tmp_l[i]['part'],
-                                                                tmp_l[i]['data']))
+        print('\rtom={}, chapter={}, part={}, data={}\r'.format(tmp_l[p_i]['tom'], tmp_l[p_i]['chapter'],
+                                                                tmp_l[p_i]['part'],
+                                                                tmp_l[p_i]['data']))
     for el in backward_list:
         el['IDF'] = float(math.log(len(tmp_l) / el['ind_doc']))
         print('\rword = {}, data={}, ind_doc={}, IDF={}\r'.format(el['word'], el['data'], el['ind_doc'], el['IDF']))
