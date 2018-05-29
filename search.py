@@ -4,8 +4,33 @@ import re
 from tqdm import tqdm
 
 
-def snipset():
-    pass
+def snipset(s_w=list(), t=int(), c=int(), p=int()):
+    s_proc = open('processed_text.json', 'r', encoding='UTF-8').read()
+    s_data = json.loads(proc_text)
+    s_tmp1 = 0
+    s_tmp2 = 0
+    for s_i in s_data:
+        if s_i['tom'] == t and s_i['chapter'] == c and s_i['part'] == p:
+            for s_j in range(len(s_i['text'].split())):
+                # print(s_j, end='')
+                if '.' in s_i['text'].split()[s_j]:
+                    s_tmp1 = s_j + 1
+                if s_i['text'].split()[s_j].lower() in s_w:
+                    s_tmp2 = s_j
+                    break
+            break
+    for s_i in s_data:
+        if s_i['tom'] == t and s_i['chapter'] == c and s_i['part'] == p:
+            for s_j in range(s_tmp1, max(s_tmp1 + 20, s_tmp2)):
+                if s_j == s_tmp1:
+                    s_i['text'].split()[s_j] = s_i['text'].split()[s_j][s_i['text'].split()[s_j].find('.'):]
+                s_str = re.sub('[.,:;«»–_()[\]]', '', s_i['text'].split()[s_j].lower())
+                if s_str in s_w:
+                    print('!!!' + s_i['text'].split()[s_j] + '!!!', end=' ')
+                else:
+                    print(s_i['text'].split()[s_j], end=' ')
+            print('...')
+
     return
 
 
@@ -22,10 +47,10 @@ def process(filename):
     o = line.find('/', o) + 1
     p = int(line[o:line.find('/', o)])
     for line in file:
-        line = line.replace(r'\n', '')
+        line = line.replace(r'\n', ' ')
         if line[0] == '/':
             if p_tmp == 1:
-                s = s.replace('\n', '')
+                s = s.replace('\n', ' ')
                 tmp_l.append(dict(tom=t, chapter=c, part=p, text=s))
                 s = ''
             p_tmp = 0
@@ -36,10 +61,10 @@ def process(filename):
             o = line.find('/', o) + 1
             p = int(line[o:line.find('/', o)])
         else:
-            s = s.replace(r'\n', '')
+            s = s.replace(r'\n', ' ')
             s = s + line
             p_tmp = 1
-    s = s.replace('\n', '')
+    s = s.replace('\n', ' ')
     tmp_l.append(dict(tom=t, chapter=c, part=p, text=s))
     backward_list = list()
     for p_i in tqdm(range(len(tmp_l))):
@@ -48,7 +73,7 @@ def process(filename):
         tmp_l[p_i] = dict(data=dict(amount_of_words=len(tmp_l[p_i]['text'])))
         p_words = tmp_l[p_i]['text'].split()
         for p_j in range(len(p_words)):
-            p_words[p_j] = re.sub(".,:;«»–_\(\)\[]", '', p_words[p_j])
+            p_words[p_j] = re.sub('[.,:;«»–_()[\]]', '', p_words[p_j])
             p_words[p_j] = p_words[p_j].lower()
             add.append(dict(word=p_words[p_j], TF=1))
             p_leng = len(add) - 1
@@ -108,9 +133,12 @@ back_list = open('backward_list.json', 'r', encoding='UTF-8').read()
 data_back = json.loads(back_list)
 inp = input('input search request ')
 words = inp.split()
+print('you typed: ', end=' ')
 for i in range(len(words)):
-    words[i] = re.sub(".,:;«»–_\(\)\[]", '', words[i])
+    words[i] = re.sub('[.,:;«»–_()[\]]', '', words[i])
     words[i] = words[i].lower()
+    print(words[i], end=' ')
+print('\n*because python console doesn\'t sopport formating key words would be encapsulated in \'!!!\'*')
 flag = 0
 res = list()
 for wi in words:
@@ -151,7 +179,7 @@ for i in range(len(res)):
     print("{}: tom: {} chapter: {} part: {}".format(i + 1, res[i][0]['tom'], res[i][0]['chapter'], res[i][0]['part']))
     if i == 4:
         print("-----------------------------------")
-
+    snipset(words, res[i][0]['tom'], res[i][0]['chapter'], res[i][0]['part'])
 res2 = list()
 pos = list()
 for i in range(len(data_proc)):
@@ -160,7 +188,7 @@ for i in range(len(data_proc)):
     for k in range(len(words)):
         pos[i]['seen'][k] = list()
     for j in range(len(res2)):
-        res2[j] = re.sub(".,:;«»–_\(\)\[]", '', res2[j])
+        res2[j] = re.sub('[.,:;«»–_()[\]]', '', res2[j])
         res2[j] = res2[j].lower()
         for k in range(len(words)):
             if res2[j] == words[k]:
@@ -207,3 +235,6 @@ for i in range(len(pos)):
     print("{}: tom: {} chapter: {} part: {}".format(i + 1, pos[i]['tom'], pos[i]['chapter'], pos[i]['part']))
     if i == 4:
         print("-----------------------------------")
+    snipset(words, pos[i]['tom'], pos[i]['chapter'], pos[i]['part'])
+if res == list() and pos == list():
+    print('couldn\'t find anythind :c')
