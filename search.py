@@ -4,6 +4,8 @@ import re
 from tqdm import tqdm
 
 
+# Адам <3
+
 def snipset(s_w=list(), t=int(), c=int(), p=int()):
     s_proc = open('processed_text.json', 'r', encoding='UTF-8').read()
     s_data = json.loads(proc_text)
