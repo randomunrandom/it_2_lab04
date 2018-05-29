@@ -3,6 +3,7 @@ import math
 import re
 from tqdm import tqdm
 
+
 def snipset():
     pass
     return
