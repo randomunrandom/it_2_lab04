@@ -133,7 +133,7 @@ proc_text = open('processed_text.json', 'r', encoding='UTF-8').read()
 data_proc = json.loads(proc_text)
 back_list = open('backward_list.json', 'r', encoding='UTF-8').read()
 data_back = json.loads(back_list)
-inp = input('input search request ')
+inp = input('input search request: ')
 words = inp.split()
 print('you typed: ', end=' ')
 for i in range(len(words)):
