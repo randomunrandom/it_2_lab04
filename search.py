@@ -70,9 +70,9 @@ def process(filename):
     tmp_l.append(dict(tom=t, chapter=c, part=p, text=s))
     backward_list = list()
     for p_i in tqdm(range(len(tmp_l))):
-        tmp_l[p_i] = dict(data=list())
+        tmp_l[p_i]['data'] = dict()
         add = list()
-        tmp_l[p_i] = dict(data=dict(amount_of_words=len(tmp_l[p_i]['text'])))
+        tmp_l[p_i]['data']['amount_of_words'] = len(tmp_l[p_i]['text'])
         p_words = tmp_l[p_i]['text'].split()
         for p_j in range(len(p_words)):
             p_words[p_j] = re.sub('[.,:;«»–_()[\]]', '', p_words[p_j])
