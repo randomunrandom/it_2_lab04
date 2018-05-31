@@ -15,17 +15,16 @@ def snipset(s_w=list(), t=int(), c=int(), p=int()):
         if s_i['tom'] == t and s_i['chapter'] == c and s_i['part'] == p:
             for s_j in range(len(s_i['text'].split())):
                 # print(s_j, end='')
+                s_tmp1 = 0
                 if '.' in s_i['text'].split()[s_j]:
                     s_tmp1 = s_j + 1
-                if s_i['text'].split()[s_j].lower() in s_w:
+                if re.sub('[.,:;«»–_()[\]]', '', s_i['text'].split()[s_j].lower()) in s_w:
                     s_tmp2 = s_j
                     break
             break
     for s_i in s_data:
         if s_i['tom'] == t and s_i['chapter'] == c and s_i['part'] == p:
-            for s_j in range(s_tmp1, max(s_tmp1 + 20, s_tmp2)):
-                if s_j == s_tmp1:
-                    s_i['text'].split()[s_j] = s_i['text'].split()[s_j][s_i['text'].split()[s_j].find('.'):]
+            for s_j in range(s_tmp1, min(s_tmp1 + 20, s_tmp2 + 2)):
                 s_str = re.sub('[.,:;«»–_()[\]]', '', s_i['text'].split()[s_j].lower())
                 if s_str in s_w:
                     print('!!!' + s_i['text'].split()[s_j] + '!!!', end=' ')
