@@ -1,6 +1,5 @@
 ## IT_1_lab04
 # It's a simple implementation of search algorithms
-*you can contact me [here](https://vk.com/randomunrandom)*
 
 <details> 
   <summary>if you want to see an example, click here </summary>
